@@ -5,9 +5,8 @@
 (defn parse-phoneme
   "Parse a phoneme into a phone/accent pair"
   [s]
-  (let [[full phone stress] (re-matches #"([A-Z]+)([012])?" s)
-        stress-map { nil nil "0" :n "1" :p "2" :s }]
-    [phone (stress-map stress)]))
+  (let [[_ phone stress] (re-matches #"([A-Z]+)([012])?" s)]
+    [phone (case stress "0" :n "1" :p "2" :s nil)]))
 
 (defn parse-entry
   "Parse a dictionary entry"
@@ -24,7 +23,8 @@
 
 (defn parse-dictionary
   [reader]
-  (let [trimmed  (map #(.trim %1) (read-lines reader))
+  (let [lines    (read-lines reader)
+        trimmed  (map #(.trim %1) lines)
         filtered (filter is-dictionary-entry? trimmed)
         parsed   (map parse-entry filtered)]
     (reduce #(assoc %1 (:word %2) (:phonemes %2)) {}  parsed)))
