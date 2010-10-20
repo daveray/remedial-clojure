@@ -1,0 +1,10 @@
+;;; Mini dictionary for test use 
+;;; See rhyme.clj to see how it's loaded
+BETTY  B EH1 T IY0
+READY  R EH1 D IY0
+SPAGHETTI  S P AH0 G EH1 T IY0
+MACARONI  M AE2 K ER0 OW1 N IY0
+LISP  L IH1 S P
+ASP  AE1 S P
+ASMODEUS  AE2 Z M AH0 D EY1 AH0 S
+ASPARAGUS  AH0 S P EH1 R AH0 G AH0 S

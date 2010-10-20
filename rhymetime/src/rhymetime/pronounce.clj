@@ -16,10 +16,11 @@
     { :word     (first parts) 
       :phonemes (map parse-phoneme (rest parts)) }))
 
-(defn is-dictionary-entry?
+(defn- is-dictionary-entry?
+  "Returns true if the given line is a dictionary entry"
   [line]
-  (not (or (.isEmpty line) 
-           (.startsWith line ";"))))
+  (and (not (empty? line))
+       (not (.startsWith line ";"))))
 
 (defn parse-dictionary
   [reader]
