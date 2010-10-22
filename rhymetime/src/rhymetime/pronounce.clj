@@ -18,7 +18,7 @@
 (defn- is-dictionary-entry?
   "Returns true if the given line is a dictionary entry"
   [line]
-  (and (not (empty? line))
+  (and (not (empty? line))  ; (seq line) is more idiomatic!
        (not (.startsWith line ";"))))
 
 (defn parse-dictionary
@@ -29,3 +29,11 @@
         parsed   (map parse-entry filtered)]
     (reduce #(assoc %1 (:word %2) (:phonemes %2)) {}  parsed)))
 
+; Alternate ->> implementation suggested on the Clojure Group
+;(defn parse-dictionary
+  ;[reader]
+  ;(->> (read-lines reader)
+       ;(map #(.trim %1))
+       ;(filter is-dictionary-entry?)
+       ;(map parse-entry)
+       ;(reduce #(assoc %1 (:word %2) (:phonemes %2)) {})))
