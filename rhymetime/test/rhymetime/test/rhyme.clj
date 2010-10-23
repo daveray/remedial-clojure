@@ -17,7 +17,9 @@
     (not (phonemes-rhyme? ["AA" :p] ["AE" :p]))))
 
 (describe rhyme-weight
-  (given [resource (-> (Thread/currentThread) .getContextClassLoader (.getResource "rhymetime/test/test-dict.txt"))
+  (given [resource (.. (Thread/currentThread) 
+                        getContextClassLoader 
+                        (getResource "rhymetime/test/test-dict.txt"))
           dict (parse-dictionary resource)]
     (it "returns that BETTY and READY rhyme "
       (= 3 (rhyme-weight dict "READY" "BETTY")))
