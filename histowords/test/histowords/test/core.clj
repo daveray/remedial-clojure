@@ -30,5 +30,5 @@
 
 (describe histogram
   (it "can generate a histogram from word counts"
-    (= "mary ##\nwhy  ###\n" (histogram [["mary" 2] ["why" 3]]))))
+    (= "mary ##\nwhy  ###" (histogram [["mary" 2] ["why" 3]]))))
 
