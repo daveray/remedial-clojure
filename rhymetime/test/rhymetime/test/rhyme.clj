@@ -11,7 +11,8 @@
           dict (parse-dictionary resource)
           lisp (dict "LISP")
           asp  (dict "ASP")
-          betty (dict "BETTY")]
+          betty (dict "BETTY")
+          bear (dict "BEAR")]
 
     (testing make-rhyme-tree
       (it "builds a rhyme tree from a pronouncing dictionary where words are
@@ -21,17 +22,17 @@
           (and
             (= ["BETTY"] (:words (get-in tree (rhyme-tree-path-for betty))))
             (= ["LISP"] (:words (get-in tree (rhyme-tree-path-for lisp))))
+            (= ["BEAR" "BARE"] (:words (get-in tree (rhyme-tree-path-for bear))))
             (= ["ASP"] (:words (get-in tree (rhyme-tree-path-for asp))))))))
 
-    (testing make-rhyme-calculator
+    (testing make-rhymer
       (it "returns a function that calculates rhymes for a word"
-        (let [rhymes (make-rhyme-calculator dict)]
+        (let [rhymes (make-rhymer dict)]
           (= #{"BETTY" "READY" "SPAGHETTI" "MACARONI"} (set (rhymes "MACARONI" 1)))
           (= #{"BETTY" "READY" "SPAGHETTI" } (set (rhymes "BETTY" 2)))))
       (it "returns a function that returns an empty seq for unknown words"
-        (let [rhymes (make-rhyme-calculator dict)]
-          (empty? (rhymes "MACARONIX" 1))))
-             )))
+        (let [rhymes (make-rhymer dict)]
+          (empty? (rhymes "MACARONIX" 1)))))))
 
 
 (describe phonemes-rhyme?

@@ -50,7 +50,7 @@
  
 (defn make-rhyme-tree
   "Make a rhyme tree from a pronouncing dictionary. This constructs the
-   raw tree structure. See make-rhyme-calculator for the actual rhyme
+   raw tree structure. See make-rhymer for the actual rhyme
    calculation"
   [dict]
   (reduce add-word-to-rhyme-tree {} dict))
@@ -67,15 +67,14 @@
                   (collect-words-in-sub-tree v))
                 (collect-words-in-sub-tree r))))))
 
-(defn make-rhyme-calculator
+(defn make-rhymer
   "Returns a function that can lookup up rhymes for a word in the given dictionary"
   [dict]
   (let [tree (make-rhyme-tree dict)]
     (fn [word depth] 
       (when-let [phonemes (dict word)]
         (let [path     (take depth (rhyme-tree-path-for phonemes))
-              sub-tree (get-in tree path)
-              _ (println sub-tree " ---- ")]
+              sub-tree (get-in tree path)]
           (collect-words-in-sub-tree sub-tree))))))
 
 (defn phonemes-rhyme?
