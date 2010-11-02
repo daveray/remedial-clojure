@@ -1,8 +1,39 @@
 (ns rhymetime.test.rhyme
   (:use rhymetime.rhyme
         rhymetime.pronounce
-        [lazytest.describe :only (describe it given)]
+        lazytest.describe
         [lazytest.expect :only (expect)]))
+
+(describe "with a test dictionary"
+  (given [resource (.. (Thread/currentThread) 
+                        getContextClassLoader 
+                        (getResource "rhymetime/test/test-dict.txt"))
+          dict (parse-dictionary resource)
+          lisp (dict "LISP")
+          asp  (dict "ASP")
+          betty (dict "BETTY")]
+
+    (testing make-rhyme-tree
+      (it "builds a rhyme tree from a pronouncing dictionary where words are
+          indexed by reversed soft rhyme classes. The words at a given node
+          are stored under the :words key"
+        (let [tree (make-rhyme-tree dict)]
+          (and
+            (= ["BETTY"] (:words (get-in tree (rhyme-tree-path-for betty))))
+            (= ["LISP"] (:words (get-in tree (rhyme-tree-path-for lisp))))
+            (= ["ASP"] (:words (get-in tree (rhyme-tree-path-for asp))))))))
+
+    (testing make-rhyme-calculator
+      (it "returns a function that calculates rhymes for a word"
+        (let [rhymes (make-rhyme-calculator dict)]
+          (= ["BETTY" "READY" "SPAGHETTI" "MACARONI"] (rhymes "MACARONI" 1))
+          (= ["BETTY" "READY" "SPAGHETTI" ] (rhymes "BETTY" 2))))
+      (it "returns a function that returns an empty seq for unknown words"
+        (let [rhymes (make-rhyme-calculator dict)
+              _ (print (rhymes "ASDASDL" 1))]
+          (empty? (rhymes "MACARONIX" 1))))
+             )))
+
 
 (describe phonemes-rhyme?
   (it "returns true if two phonemes are the same"

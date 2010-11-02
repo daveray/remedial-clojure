@@ -1,17 +1,7 @@
 # rhymetime
 
-FIXME: write description
+Sample project in support of "Remedial Clojure" series at http://blog.darevay.com.
 
-## Usage
-
-FIXME: write
-
-## Installation
-
-FIXME: write
-
-## License
-
-Copyright (C) 2010 FIXME
+Copyright (C) 2010 Dave Ray
 
 Distributed under the Eclipse Public License, the same as Clojure.
