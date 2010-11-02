@@ -44,8 +44,9 @@
    a new tree"
   [tree [word phonemes]]
   (let [path (rhyme-tree-path-for phonemes)
-        current (get-in tree path)]
-    (assoc-in tree path (assoc current :words (conj current word)))))
+        sub-tree (get-in tree path)
+        words (:words sub-tree)]
+    (assoc-in tree path (assoc sub-tree :words (cons word words)))))
  
 (defn make-rhyme-tree
   "Make a rhyme tree from a pronouncing dictionary. This constructs the
@@ -73,7 +74,8 @@
     (fn [word depth] 
       (when-let [phonemes (dict word)]
         (let [path     (take depth (rhyme-tree-path-for phonemes))
-              sub-tree (get-in tree path)]
+              sub-tree (get-in tree path)
+              _ (println sub-tree " ---- ")]
           (collect-words-in-sub-tree sub-tree))))))
 
 (defn phonemes-rhyme?

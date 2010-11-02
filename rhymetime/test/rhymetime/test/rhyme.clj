@@ -26,11 +26,10 @@
     (testing make-rhyme-calculator
       (it "returns a function that calculates rhymes for a word"
         (let [rhymes (make-rhyme-calculator dict)]
-          (= ["BETTY" "READY" "SPAGHETTI" "MACARONI"] (rhymes "MACARONI" 1))
-          (= ["BETTY" "READY" "SPAGHETTI" ] (rhymes "BETTY" 2))))
+          (= #{"BETTY" "READY" "SPAGHETTI" "MACARONI"} (set (rhymes "MACARONI" 1)))
+          (= #{"BETTY" "READY" "SPAGHETTI" } (set (rhymes "BETTY" 2)))))
       (it "returns a function that returns an empty seq for unknown words"
-        (let [rhymes (make-rhyme-calculator dict)
-              _ (print (rhymes "ASDASDL" 1))]
+        (let [rhymes (make-rhyme-calculator dict)]
           (empty? (rhymes "MACARONIX" 1))))
              )))
 
