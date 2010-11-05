@@ -1,0 +1,58 @@
+body {
+    background-color: #CCCCEE;
+    font-family: "sans serif";
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    /*margin: 0;*/
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 660px;
+}
+
+.header {
+    padding: 5px 5px 0px 5px;
+}
+
+.form {
+    font-weight: bold;
+}
+
+.results {
+    border-top: solid black;
+    padding: 15px 5px 5px 5px;
+}
+
+.found {
+    color: #444;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.unfound {
+    color: #ff2222;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.count {
+    background-color: #aaaaff;
+    padding: 5px 5px 5px 5px;
+    display: inline-block;
+    text-align: right;
+    width: 2em;
+}
+
+.phonemes {
+    color: #444;
+    padding-left: 10px;
+}
