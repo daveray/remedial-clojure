@@ -16,8 +16,16 @@
 (defn- render-form
   [word]
   (form-to {:class "form"} [:get "/"] 
-          (label :word "Find rhymes for: ")
+          (label :word "Find rhymes for ")
           (text-field :word word)))
+
+(defn- style-phonemes
+  [phonemes depth]
+  (let [start (- (count phonemes) depth)]
+    (for [[[ph] i] (map vector phonemes (iterate inc 0))]
+      (if (< i start)
+        ph
+        [:b ph]))))
 
 (defn- render-rhyme-results
   [word depth rhymes]
@@ -38,9 +46,11 @@
               [:a {:href (str "?word=" rhyme)} rhyme]
               " "
               [:span.phonemes 
-                "["
-                (apply str (interpose " " (map first (@dict rhyme))))] 
-                "]"
+                "[ "
+                (interpose " - " (style-phonemes (@dict rhyme) depth))
+                ;(apply str (interpose " - " (map first (@dict rhyme))))
+                " ]"
+               ]
              ])])]))
 
 (defn- render-page
@@ -60,7 +70,7 @@
  
 (defroutes all-routes
   (GET "/" 
-    {{word "word" depth "depth" } :params :as request}
+    {{ word "word" depth "depth" } :params :as request}
     (html (render-page word depth)))
   (route/resources "/public")
   (route/not-found "Page not found"))
@@ -68,9 +78,14 @@
 ; This doesn't work
 ;(wrap! all-routes (wrap-keyword-params))
 
+;(use 'rhymetime.web :reload)
+;(def server (run {:join? false}))
+;(.stop server)
+
 (defn run
-  []
-  (run-jetty all-routes {:port 8080}))
+  [options]
+  (let [options (merge {:port 8080 :join? true } options)]
+    (run-jetty (var all-routes) options)))
 
 (defn -main [& args]
   (do
