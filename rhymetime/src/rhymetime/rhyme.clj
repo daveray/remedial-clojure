@@ -1,6 +1,10 @@
 (ns rhymetime.rhyme)
 
 (def soft-rhyme-classes-seed
+  ^{ :doc "See for soft-rhyme-classes below. These classes are based on a very
+          old dead page accessible only with the wayback machine:
+          http://web.archive.org/web/20021018075650/http://web.utk.edu/~blyon/RhymerMiner/FranklinRhymerHelp.htm
+          " }
   [#{"AA" "AO" "AW" "OW"}
    #{"AE" "EH"}
    #{"AH"}
@@ -16,7 +20,6 @@
    #{"L"}
    #{"M" "N"}
    #{"NG"}
-   #{"OW"}
    #{"OY"}
    #{"R"}
    #{"S"}
@@ -25,10 +28,7 @@
 
 (def soft-rhyme-classes 
   ^{ :doc "A map from phoneme to soft rhyme class" }
-  (reduce
-    (fn [acc [k v]] (assoc acc k v))
-    {} 
-    (for [klass soft-rhyme-classes-seed, phone klass] [phone klass])))
+  (apply hash-map (flatten (for [klass soft-rhyme-classes-seed, phone klass] [phone klass]))))
 
 (defn rhyme-tree-path-for
   "Given a word pronunciation, return its path in a rhyme tree"
@@ -50,18 +50,17 @@
  
 (defn make-rhyme-tree
   "Make a rhyme tree from a pronouncing dictionary. This constructs the
-   raw tree structure. See make-rhymer for the actual rhyme
-   calculation"
+   raw tree structure. See make-rhymer for the actual rhyme calculation"
   [dict]
   (reduce add-word-to-rhyme-tree {} dict))
 
 (defn- collect-words-in-sub-tree
-  "Returns a lazy seq of all the words in the :words keys of the given
-   sub-tree."
+  "Returns a lazy seq of all the words in the :words keys of the given sub-tree."
   [coll]
   (lazy-seq 
     (when-let [s (seq coll)]
-      (let [[k v] (first s) r (rest s)]
+      (let [[k v] (first s) 
+            r (rest s)]
         (concat (if (= :words k) 
                   v 
                   (collect-words-in-sub-tree v))
@@ -88,3 +87,4 @@
   (let [aphones (reverse (dict a))
         bphones (reverse (dict b))]
     (count (take-while true? (map phonemes-rhyme? aphones bphones)))))
+

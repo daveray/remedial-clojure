@@ -20,19 +20,19 @@
           are stored under the :words key"
         (let [tree (make-rhyme-tree dict)]
           (and
-            (= ["BETTY"] (:words (get-in tree (rhyme-tree-path-for betty))))
-            (= ["LISP"] (:words (get-in tree (rhyme-tree-path-for lisp))))
+            (= ["BETTY"]       (:words (get-in tree (rhyme-tree-path-for betty))))
+            (= ["LISP"]        (:words (get-in tree (rhyme-tree-path-for lisp))))
             (= ["BEAR" "BARE"] (:words (get-in tree (rhyme-tree-path-for bear))))
-            (= ["ASP"] (:words (get-in tree (rhyme-tree-path-for asp))))))))
+            (= ["ASP"]         (:words (get-in tree (rhyme-tree-path-for asp))))))))
 
     (testing make-rhymer
       (it "returns a function that calculates rhymes for a word"
-        (let [rhymes (make-rhymer dict)]
-          (= #{"BETTY" "READY" "SPAGHETTI" "MACARONI"} (set (rhymes "MACARONI" 1)))
-          (= #{"BETTY" "READY" "SPAGHETTI" } (set (rhymes "BETTY" 2)))))
+        (let [rhymer (make-rhymer dict)]
+          (= #{"BETTY" "READY" "SPAGHETTI" "MACARONI"} (set (rhymer "MACARONI" 1)))
+          (= #{"BETTY" "READY" "SPAGHETTI" } (set (rhymer "BETTY" 2)))))
       (it "returns a function that returns an empty seq for unknown words"
-        (let [rhymes (make-rhymer dict)]
-          (empty? (rhymes "MACARONIX" 1)))))))
+        (let [rhymer (make-rhymer dict)]
+          (empty? (rhymer "MACARONIX" 1)))))))
 
 
 (describe phonemes-rhyme?
