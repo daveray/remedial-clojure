@@ -20,12 +20,11 @@
           (text-field :word word)))
 
 (defn- style-phonemes
+  "Make the last 'depth' phonemes bold."
   [phonemes depth]
-  (let [start (- (count phonemes) depth)]
-    (for [[[ph] i] (map vector phonemes (iterate inc 0))]
-      (if (< i start)
-        ph
-        [:b ph]))))
+  (let [start (- (count phonemes) depth)
+        [leading trailing] (split-at start (map first phonemes))]
+    (concat leading (for [ph trailing] [:b ph])))) 
 
 (defn- render-rhyme-results
   [word depth rhymes]
@@ -33,24 +32,20 @@
     [:div.results
       ; Write header text
       (if (seq rhymes)
-          [:span.found "Found " n " rhyme" (if (= n 1) "" "s") " for '" word "'"] ; at depth " depth]
+          [:span.found "Found " n " rhyme" (if (= n 1) "" "s") " for '" word "'"]
           [:span.unfound "Unknown word '" word "'"])
 
       ; If there's a result, write the list...
-      (when rhymes
-        [:ul
+      (when (seq rhymes)
+        [:table ; yeah, a table.
           (for [[rhyme i] (map vector rhymes (iterate inc 1))] 
-            [:li 
-              [:span.count i]
-              " "
-              [:a {:href (str "?word=" rhyme)} rhyme]
-              " "
-              [:span.phonemes 
+            [:tr 
+              [:td.count i]
+              [:td [:a {:href (str "?word=" rhyme)} rhyme]]
+              [:td.phonemes
                 "[ "
                 (interpose " - " (style-phonemes (@dict rhyme) depth))
-                ;(apply str (interpose " - " (map first (@dict rhyme))))
-                " ]"
-               ]
+                " ]"]
              ])])]))
 
 (defn- render-page
@@ -66,11 +61,12 @@
           (let [normalized (.toUpperCase word)
                 depth (if depth (Integer/parseInt depth) (dec (count (@dict normalized))))
                 rhymes (sort (@rhymer normalized depth))]
-            (render-rhyme-results word depth rhymes)))]]])
+            (render-rhyme-results word depth rhymes)))
+       [:div.footer [:em "That's it"]]]]])
  
 (defroutes all-routes
   (GET "/" 
-    {{ word "word" depth "depth" } :params :as request}
+    { { word "word" depth "depth" } :params }
     (html (render-page word depth)))
   (route/resources "/public")
   (route/not-found "Page not found"))
@@ -83,14 +79,19 @@
 ;(.stop server)
 
 (defn run
+  "Run Jetty server. Options default to {:port 8080 :join? true}"
   [options]
   (let [options (merge {:port 8080 :join? true } options)]
     (run-jetty (var all-routes) options)))
 
+(defn load-dictionary
+  [file]
+  (dosync
+        (ref-set dict   (parse-dictionary file))
+        (ref-set rhymer (make-rhymer @dict))))
+
 (defn -main [& args]
   (do
-    (dosync
-      (ref-set dict (parse-dictionary (first args)))
-      (ref-set rhymer (make-rhymer @dict)))
+    (load-dictionary (first args))
     (run)))
 
