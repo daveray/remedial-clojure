@@ -5,6 +5,8 @@
         compojure.core
         ring.adapter.jetty
         ring.middleware.keyword-params
+        ring.util.response
+        ring.util.codec
         hiccup.core
         hiccup.form-helpers
         hiccup.page-helpers)
@@ -56,23 +58,36 @@
     [:body 
       [:div.container 
         [:div.header
-          (render-form word)]
+          (render-form word)
+          [:a {:href "random"} "Random word"]]
         (when word
           (let [normalized (.toUpperCase word)
-                depth (if depth (Integer/parseInt depth) (dec (count (@dict normalized))))
-                rhymes (sort (@rhymer normalized depth))]
+                depth      (if depth (Integer/parseInt depth) (dec (count (@dict normalized))))
+                rhymes     (sort (@rhymer normalized depth))]
             (render-rhyme-results word depth rhymes)))
        [:div.footer [:em "That's it"]]]]])
- 
+
+(defn index
+  [{ { word "word" depth "depth" } :params 
+     { last-seen "last-seen" } :cookies }]
+  { :status 200
+    :body   (html (render-page word depth))})
+
+(defn random
+  [request]
+  (let [words (keys @dict)
+        word  (nth words (rand-int (count words)))]
+    (redirect (str "/?word=" (url-encode word)))))
+
 (defroutes all-routes
-  (GET "/" 
-    { { word "word" depth "depth" } :params }
-    (html (render-page word depth)))
+  (GET "/" request (index request)) 
+  (GET "/random" request (random request)) 
   (route/resources "/public")
   (route/not-found "Page not found"))
 
 ; This doesn't work
-;(wrap! all-routes (wrap-keyword-params))
+;(def all-routes (wrap-keyword-params all-routes))
+;(wrap! all-routes (:keyword-params))
 
 ;(use 'rhymetime.web :reload)
 ;(def server (run {:join? false}))
